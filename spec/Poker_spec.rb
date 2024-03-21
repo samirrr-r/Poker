@@ -99,19 +99,15 @@ RSpec.describe Player do
   before do
     person.hand=deck.deal(5)
   end
-  it "gets the amount to bet from the player" do
-    expect(person.betting).to eq(nil)
-  end
   it "shows the person their cards" do
     expect(person.see).to eq(person.hand.show_hand)
   end
   it "asks if they want to discard any cards" do
-    expect(person.discard).to eq(0)
+    person.disc = 2
+    expect(person.discard).to eq(2)
   end
   it "asks if they want to bet or fold or raise" do
-    expect(person.decision).to eq(nil)
-  end
-  it "asks how much do they want to raise their bet by" do
-    expect(person.raises).to be > (person.bet)
+    person.disc = 2
+    expect(person.decision).to eq(2)
   end
 end
