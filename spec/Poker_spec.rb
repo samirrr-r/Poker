@@ -32,3 +32,26 @@ RSpec.describe Deck do
     expect(fresh_deck.num_of_cards).to eq(fresh_deck.deck.size)
   end
 end
+
+RSpec.describe Hand do
+  let(:flush_hand) {Hand.new(Card.new("Hearts", 9), Card.new("Hearts", 9), Card.new("Hearts", 11),
+  Card.new("Hearts", 11) ,Card.new("Hearts", 12))}
+
+  let(:two_pair_hand) {Hand.new(Card.new("Hearts", 9), Card.new("Hearts", 9), Card.new("Hearts", 11),
+  Card.new("Hearts", 11) ,Card.new("Hearts", 12))}
+
+  let(:three_pair_hand) {Hand.new(Card.new("Hearts", 9), Card.new("Hearts", 9), Card.new("Hearts", 2),
+  Card.new("Hearts", 11) ,Card.new("Hearts", 9))}
+
+  let(:straight_hand) {Hand.new(Card.new("Hearts", 9), Card.new("Hearts", 8), Card.new("Hearts", 7),
+  Card.new("Hearts", 10) ,Card.new("Hearts", 6))}
+
+  let(:full_hand) {Hand.new(Card.new("Hearts", 9), Card.new("Hearts", 10), Card.new("Hearts", 9),
+  Card.new("Hearts", 9) ,Card.new("Hearts", 10))}
+
+  let(:four_hand) {Hand.new(Card.new("Hearts", 10), Card.new("Hearts", 10), Card.new("Hearts", 9),
+  Card.new("Hearts", 10) ,Card.new("Hearts", 10))}
+
+  let(:royal_hand) {Hand.new(Card.new("Hearts", 1), Card.new("Hearts", 10), Card.new("Hearts", 11),
+  Card.new("Hearts", 12) ,Card.new("Hearts", 13))}
+end
