@@ -1,3 +1,5 @@
+require "Poker"
+
 RSpec.describe Card do
   context "Displays a card" do
     let(:a_card) {Card.new("Hearts", 9)}
