@@ -13,3 +13,22 @@ RSpec.describe Card do
     end
   end
 end
+
+RSpec.describe Deck do
+  let(:fresh_deck) {Deck.new()}
+  context "Shuffle" do
+    it "Shufffles a deck of 53 cards" do
+      expect(fresh_deck.deck).not_to eq(fresh_deck.shuffle)
+    end
+  end
+  context "Deal Cards" do
+    it "Deals x cards to specified players" do
+      size = fresh_deck.num_of_cards
+      x = 5
+      expect(fresh_deck.deal(5)).not_to include(fresh_deck.deck)
+    end
+  end
+  it "returns the amount of cards in the deck" do
+    expect(fresh_deck.num_of_cards).to eq(fresh_deck.deck.size)
+  end
+end
