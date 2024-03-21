@@ -41,7 +41,7 @@ class Deck < Card
   end
 
   def deal(amount)
-    @cards = @deck.pop(amount)
+    @deck.pop(amount)
   end
 
   def num_of_cards
@@ -212,10 +212,66 @@ class Hand < Deck
       return @sorted_val_list[4]
     end
 
-    def see
+    def show_hand
       @card_list.length.times do |x|
         puts "#{x}. #{card_list[x].show}"
       end
     end
 
   end
+
+class Player < Hand
+  attr_accessor :hand, :bet, :choice
+  attr_reader :rank
+  @@choices = [1 => "bet"]
+  def initialize(name)
+    @name = name
+    @hand = nil
+    @bet = 0
+    @fold = false
+    @choice = nil
+  end
+
+  def decision
+    puts "#{@name} do you want to 1: bet\n2: fold\n3: raise"
+    choice = gets.chomp.to_i
+    if @choice>3
+      @choice=3
+    elsif @choice<0
+      @choice = 0
+    end
+    case @choice
+    when 1
+      betting()
+    when 2
+      @fold = true
+    when 3
+      raises()
+    end
+  end
+
+  def raises
+    puts "#{@name} how much do you want to raise by"
+    bet += gets.chomp.to_i
+  end
+
+  def betting
+    puts "#{@name} how much do you want to bet"
+    bet = gets.chomp.to_i
+  end
+
+  def see
+    hand.show_hand
+  end
+
+  def discard
+    puts "#{@name} how many cards do you want to discard 0-3?"
+    @disc = gets.chomp.to_i
+    if @disc>3
+      @disc=3
+    elsif disc<0
+      @disc = 0
+    end
+
+  end
+end
