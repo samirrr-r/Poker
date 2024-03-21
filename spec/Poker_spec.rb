@@ -85,5 +85,8 @@ RSpec.describe Hand do
     it "returns the high hand" do
       expect(straight_hand.high_card).to eq(10)
     end
+    it "returns the ranking of the hand" do
+      expect(full_hand.strength).to eq("Full house")
+    end
   end
 end
