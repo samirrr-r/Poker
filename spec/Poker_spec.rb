@@ -103,11 +103,10 @@ RSpec.describe Player do
     expect(person.see).to eq(person.hand.show_hand)
   end
   it "asks if they want to discard any cards" do
-    person.disc = 2
-    expect(person.discard).to eq(2)
+
+    expect(person.discard).to eq(3)
   end
   it "asks if they want to bet or fold or raise" do
-    person.disc = 2
-    expect(person.decision).to eq(2)
+    expect(person.decision).to eq(person.choices[3])
   end
 end
