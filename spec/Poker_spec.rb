@@ -113,9 +113,9 @@ end
 RSpec.describe Game do
   let(:game) {Game.new()}
   let(:person) {Player.new("person")}
-  xit "Starts the game by adding players" do
-    intial_players = game.players.length
-    game.start
+  it "Starts the game by adding players" do
+    intial_players = game.players.length()
+    game.get_players
     expect(game.players.length).to be > (intial_players)
   end
   xit "gives 5 starting cards to players" do
@@ -125,21 +125,22 @@ RSpec.describe Game do
   end
   xit "Raises the pot when a player bets" do
     prev_pot = game.pot
-    game.bet(game.players[0])
+    game.bet
     expect(game.pot).to be > (prev.pot)
   end
   xit "Removes a player for that round when they fold" do
     pre_fold = game.players[0].fold
-    game.folds(players[0])
+    game.player[0].fold = true
     expect(game.players[0].fold).not_to eq(pre_fold)
   end
   xit "Increases the bet when someone raises" do
     prev_bet = game.bet
-    game.raise(players[0])
+    game.raise
     expect(game.bet).to be > prev_bet
   end
  xit "Changes the players hand when they want to discard cards" do
   prev_hand = game.players[0].hand
+  game.player.hand.card1 = Card.new("Hearts", 3)
   expect(game.players[0].hand).not_to eq(prev_hand)
   end
 end

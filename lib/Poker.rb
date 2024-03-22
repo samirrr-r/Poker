@@ -271,5 +271,92 @@ class Player < Hand
 
 end
 class Game
+  attr_accessor :bet, :pot, :players, :deck, :prev_bet
+  def initialize()
+    @deck = Deck.new
+    @bet = 0
+    @pot = 0
+    @players = []
+    @prev_bet = 0
+  end
 
+  def get_players
+    puts "Enter in each player seperated by only a space"
+    names = gets.chomp.split(" ")
+    names.each do |name|
+      @players << Player.new("#{name}")
+    end
+  end
+
+  def new_hand
+    @players.each do |player|
+      c1, c2, c3, c4, c5 = deck.deal(5)
+      player.hand = Hand.new(c1, c2, c3, c4, c5)
+    end
+  end
+
+  def exchange()
+    @players.each do |player|
+      if player.fold = true
+        next
+      end
+      card_to_discard = []
+      player.discard.times do
+        puts "Which card would wou like to discard.
+              Type and press enter"
+        card_to_discard << gets.chomp
+      end
+      card_to_discard.each do |card|
+        case card_to_discard
+        when 1
+          player.hand.card1 = deck.deal()
+        when 2
+          player.hand.card2 = deck.deal()
+        when 3
+          player.hand.card3 = deck.deal()
+        when 4
+          player.hand.card4 = deck.deal()
+        when 5
+          player.hand.card5 = deck.deal()
+        end
+      end
+    end
+  end
+
+  def first_bet
+    until @bet > 0
+      puts "How much would you like to bet"
+      @bets = gets.chomp.to_i
+    end
+      bet
+  end
+
+  def bet
+    @pot += @bet
+    @bet = @prev_bet
+  end
+
+  def raise
+    until @bet > @prev_bet+5
+      puts "How much would you like to raise
+            (must be 5 more than previous bet)"
+      @bets = gets.chomp.to_i
+    end
+      bet
+  end
+
+  def play
+
+  end
 end
+
+
+person = Player.new("name")
+person.hand = Hand.new(Card.new("Hearts", 1), Card.new("Hearts", 10), Card.new("Hearts", 11),
+  Card.new("Hearts", 12) ,Card.new("Hearts", 13))
+deck = Deck.new
+
+puts person.hand_rank
+person.hand.card1 = Card.new("Hearts", 3)
+
+puts person.hand_rank
