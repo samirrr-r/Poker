@@ -97,16 +97,49 @@ RSpec.describe Player do
   let(:person) {Player.new("person")}
   let(:deck) {Deck.new()}
   before do
-    person.hand=deck.deal(5)
+    c1, c2, c3, c4, c5 = deck.deal(5)
+    person.hand=Hand.new(c1, c2, c3, c4, c5)
   end
   it "shows the person their cards" do
     expect(person.see).to eq(person.hand.show_hand)
   end
-  it "asks if they want to discard any cards" do
-
+  xit "asks if they want to discard any cards" do
     expect(person.discard).to eq(3)
   end
-  it "asks if they want to bet or fold or raise" do
-    expect(person.decision).to eq(person.choices[3])
+  xit "asks if they want to bet or fold or raise" do
+    expect(person.decision).to eq("raise")
+  end
+end
+RSpec.describe Game do
+  let(:game) {Game.new()}
+  let(:person) {Player.new("person")}
+  xit "Starts the game by adding players" do
+    intial_players = game.players.length
+    game.start
+    expect(game.players.length).to be > (intial_players)
+  end
+  xit "gives 5 starting cards to players" do
+    fresh_deck = game.deck.length
+    game.new_hand
+    expect(fresh_deck).to be > (game.deck.length)
+  end
+  xit "Raises the pot when a player bets" do
+    prev_pot = game.pot
+    game.bet(game.players[0])
+    expect(game.pot).to be > (prev.pot)
+  end
+  xit "Removes a player for that round when they fold" do
+    pre_fold = game.players[0].fold
+    game.folds(players[0])
+    expect(game.players[0].fold).not_to eq(pre_fold)
+  end
+  xit "Increases the bet when someone raises" do
+    prev_bet = game.bet
+    game.raise(players[0])
+    expect(game.bet).to be > prev_bet
+  end
+ xit "Changes the players hand when they want to discard cards" do
+  prev_hand = game.players[0].hand
+  expect(game.players[0].hand).not_to eq(prev_hand)
   end
 end

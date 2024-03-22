@@ -30,7 +30,7 @@ class Deck < Card
         if key==0
           next
         end
-        @deck << Card.new(type, val)
+        @deck << Card.new(type, key)
       end
     end
     shuffle
@@ -60,16 +60,25 @@ class Hand < Deck
   @@hand_strength = ["Royal Flush","Straight flush","Four of a kind", "Full house", "Flush", "Straight",
                     "Three of a kind", "Two pair", "One pair", "High card"]
   def initialize(card1, card2, card3, card4, card5)
-    @card_list = [card1, card2, card3, card4, card5]
-    @val_list = [card1.value, card2.value, card3.value, card4.value, card5.value]
-    @suit_list = [card1.suit, card2.suit, card3.suit, card4.suit, card5.suit]
+    @card1 = card1
+    @card2 = card2
+    @card3 = card3
+    @card4 = card4
+    @card5 = card5
+    update
+  end
+
+  def update
+    @card_list = [@card1, @card2, @card3, @card4, @card5]
+    @val_list = [@card1.value, @card2.value, @card3.value, @card4.value, @card5.value]
+    @suit_list = [@card1.suit, @card2.suit, @card3.suit, @card4.suit, @card5.suit]
     @sorted_val_list = @val_list.sort
     @len = @card_list.length
   end
 
 
-
   def strength()
+    update
     if is_roayl_flush?
       return @@hand_strength[0]
     elsif is_straight_flush?
@@ -125,7 +134,7 @@ class Hand < Deck
     end
   end
 
-  def is_four_kind?
+  def is_four_kind?#22
     @len.times do |i|
     occur = 1
     check = @val_list[i]
@@ -156,7 +165,7 @@ class Hand < Deck
     return false
   end
 
-  def is_three_of_kind?
+  def is_three_of_kind?#2
     occur = 0
     @len.times do |i|
       j = i+1
@@ -173,7 +182,7 @@ class Hand < Deck
     return false
   end
 
-  def is_two_pair?
+  def is_two_pair?#2
     occur = 0
     @len.times do |i|
       j = i+1
@@ -190,7 +199,7 @@ class Hand < Deck
     return false
   end
 
-  def is_pair?
+  def is_pair?#2
     @len.times do |i|
       j = i+1
       (@len-1).times do
@@ -208,33 +217,35 @@ class Hand < Deck
   end
 
   def show_hand
+    update
     @card_list.length.times do |x|
-      puts "#{x}. #{card_list[x].show}"
+      puts "#{x}. #{@card_list[x].show}"
     end
     puts
   end
 end
 class Player < Hand
-  attr_accessor :hand, :bet, :choice
-  attr_reader :rank
+  attr_accessor :hand, :bet, :choice, :winnings
   @@choices = {1 => "bet", 2 => "fold", 3 => "raise"}
   def initialize(name)
     @name = name
     @hand = nil
-    @bet = 0
     @fold = false
     @choice = nil
+    @disc = nil
+    @winnings = 0
   end
 
   def decision
+    #2
     puts "#{@name} do you want to 1: bet\n2: fold\n3: raise?"
-    choice = 3
-    if choice>3
-      choice=3
-    elsif choice<0
-      choice = 0
+    @choice = gets.chomp.to_i
+    if @choice>3
+      @choice=3
+    elsif @choice<0
+      @choice = 0
     end
-    return @@choices[choice]
+    return @@choices[@choice]
   end
 
   def see
@@ -244,12 +255,21 @@ class Player < Hand
   def discard
     see
     puts "#{@name} how many cards do you want to discard 0-3?"
-    @disc = 3
+    #1
+    @disc = gets.chomp.to_i
     if @disc>3
       @disc=3
-    elsif disc<0
+    elsif @disc<0
       @disc = 0
     end
     return @disc
   end
+
+  def hand_rank
+    hand.strength
+  end
+
+end
+class Game
+
 end
