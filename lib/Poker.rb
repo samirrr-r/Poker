@@ -232,8 +232,9 @@ class Hand < Deck
 
   def show_hand
     update
+    puts
     @card_list.length.times do |x|
-      puts "#{x}. #{@card_list[x].show}"
+      puts "#{x+1}. #{@card_list[x].show}"
     end
     puts
   end
@@ -254,7 +255,7 @@ class Player < Hand
     #2
     see
     puts "#{@name} do you want to 1: bet\n2: fold\n3: raise?"
-    @choice = 2
+    @choice = gets.chomp.to_i
     if @choice>3
       @choice=3
     elsif @choice<0
@@ -264,6 +265,7 @@ class Player < Hand
   end
 
   def see
+
     hand.show_hand
   end
 
@@ -271,7 +273,7 @@ class Player < Hand
     see
     puts "#{@name} how many cards do you want to discard 0-3?"
     #1
-    @disc = 3
+    @disc = gets.chomp.to_i
     if @disc>3
       @disc=3
     elsif @disc<0
@@ -309,6 +311,7 @@ class Game < Player
     @players.each do |player|
       c1, c2, c3, c4, c5 = deck.deal(5)
       player.hand = Hand.new(c1, c2, c3, c4, c5)
+      player.hand.update
     end
   end
 
@@ -321,10 +324,10 @@ class Game < Player
       player.discard.times do
         puts "Which card would wou like to discard.
               Type and press enter"
-        card_to_discard << gets.chomp
+        card_to_discard << gets.chomp.to_i
       end
       card_to_discard.each do |card|
-        case card_to_discard
+        case card
         when 1
           player.hand.card1 = deck.deal(1)
         when 2
@@ -337,42 +340,45 @@ class Game < Player
           player.hand.card5 = deck.deal(1)
         end
       end
+      player.hand.update
     end
   end
 
   def first_bet
-    until @bet > 0
-      puts "How much would you like to bet"
-      @bets = gets.chomp.to_i
+    while @bet == 0 || @bet < 0
+      puts "#{players[0].name} how much would you like to bet"
+      @bet = gets.chomp.to_i
     end
       bets
   end
 
   def bets
     @pot += @bet
-    @bet = @prev_bet
+    @prev_bet = @bet
   end
 
   def raises
     until @bet >= @prev_bet+5
       puts "How much would you like to raise
             (must be 5 more than previous bet)"
-      @bets = 10
+      @bet = gets.chomp.to_i
     end
-      bet
+      bets
   end
 
   def quit_game
     puts "Do you all want to quit this game?(enter q to quit)"
-    @quit = gets.chomp.downcase
-    if @quit == "q"
+    @quit = gets.chomp
+    if @quit == "q" || @quit == "Q"
       @quit = true
+    else
+      @quit = false
     end
   end
 
   def show_winnings
     @players.each do |player|
-      puts player.winnings
+      puts "#{player.name} you won $#{player.winnings}"
     end
   end
 
@@ -383,10 +389,10 @@ class Game < Player
       end
       case player.decision
       when @@choices[1]
-        if @bet == 0
+        if @bet <= 0
           first_bet
         else
-          bet
+          bets
         end
       when @@choices[2]
         player.fold = true
@@ -404,12 +410,12 @@ class Game < Player
       if player.fold
         next
       end
-      puts "#{player.name} your hand has a rank of #{player.strength}"
-      if player.strength > winner
+      puts "#{player.name} your hand has a rank of #{player.hand.strength}"
+      if player.hand.strength > winner
         winner_lst = []
-        winner = player.strength
+        winner = player.hand.strength
         winner_lst << player
-      elsif player.strength == winner
+      elsif player.hand.strength == winner
         winner_lst << player
       end
     end
@@ -419,17 +425,19 @@ class Game < Player
       highest_highcard = 0
       cur_winner = nil
       winner_lst.each do |win_player|
-        if highest_highcard < win_player.high_card
-          highest_highcard = win_player.high_card
+        if highest_highcard < win_player.hand.high_card
+          highest_highcard = win_player.hand.high_card
           cur_winner = win_player
         end
       end
       cur_winner.winnings += @pot
       puts "#{cur_winner.name} you won the pot of#{@pot}"
+    elsif winner_lst.length == 1
+      puts "#{winner_lst[0].name} you won the pot of #{@pot}"
+      winner_lst[0].winnings += @pot
+    else
+      puts "Nobody won"
     end
-    puts "#{winner_lst[0].name} you won the pot of#{@pot}"
-    winner_lst[0].winnings += @pot
-
     #resets the pot when someone wins
     @pot = 0
   end
@@ -437,8 +445,8 @@ class Game < Player
   #main method that starts the game
   def play
     get_players
-    new_hand
-    unless @quit
+    until @quit
+      new_hand
       bet_round
       draw_round
       bet_round
@@ -478,4 +486,4 @@ puts per2.hand_rank
 puts lst[2].hand_rank
 
 game = Game.new
-#game.play
+game.play
