@@ -88,7 +88,7 @@ RSpec.describe Hand do
       expect(straight_hand.high_card).to eq(10)
     end
     it "returns the ranking of the hand" do
-      expect(full_hand.strength).to eq("Full house")
+      expect(full_hand.strength).to eq(7)
     end
   end
 end
@@ -118,27 +118,29 @@ RSpec.describe Game do
     game.get_players
     expect(game.players.length).to be > (intial_players)
   end
-  xit "gives 5 starting cards to players" do
-    fresh_deck = game.deck.length
+  it "gives 5 starting cards to players" do
+    fresh_deck = game.deck.num_of_cards
     game.new_hand
-    expect(fresh_deck).to be > (game.deck.length)
+    expect(fresh_deck).to be > (game.deck.num_of_cards)
   end
-  xit "Raises the pot when a player bets" do
+  it "Raises the pot when a player bets" do
     prev_pot = game.pot
     game.bet
-    expect(game.pot).to be > (prev.pot)
+    expect(game.pot).to be > (prev_pot.pot)
   end
-  xit "Removes a player for that round when they fold" do
+  it "Removes a player for that round when they fold" do
+    game.players << person
     pre_fold = game.players[0].fold
     game.player[0].fold = true
     expect(game.players[0].fold).not_to eq(pre_fold)
   end
-  xit "Increases the bet when someone raises" do
+  it "Increases the bet when someone raises" do
     prev_bet = game.bet
-    game.raise
+    game.raises
     expect(game.bet).to be > prev_bet
   end
- xit "Changes the players hand when they want to discard cards" do
+ it "Changes the players hand when they want to discard cards" do
+  game.players << person
   prev_hand = game.players[0].hand
   game.player.hand.card1 = Card.new("Hearts", 3)
   expect(game.players[0].hand).not_to eq(prev_hand)

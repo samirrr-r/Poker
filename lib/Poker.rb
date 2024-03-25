@@ -57,8 +57,16 @@ end
 
 class Hand < Deck
   attr_accessor :card1, :card2, :card3, :card4, :card5
-  @@hand_strength = ["Royal Flush","Straight flush","Four of a kind", "Full house", "Flush", "Straight",
-                    "Three of a kind", "Two pair", "One pair", "High card"]
+  @@hand_strength = {:royalflush => 10,
+                      :straightflush => 9,
+                      :fourkind => 8,
+                      :fullhouse => 7,
+                      :flush => 6,
+                      :straight => 5,
+                      :threekind => 4,
+                      :twopair => 3,
+                      :onepair => 2,
+                      :highcard => 1}
   def initialize(card1, card2, card3, card4, card5)
     @card1 = card1
     @card2 = card2
@@ -80,25 +88,25 @@ class Hand < Deck
   def strength()
     update
     if is_roayl_flush?
-      return @@hand_strength[0]
+      return @@hand_strength[:royalflush]
     elsif is_straight_flush?
-      return @@hand_strength[1]
+      return @@hand_strength[:straightflush]
     elsif is_four_kind?
-      return @@hand_strength[2]
+      return @@hand_strength[:fourkind]
     elsif is_full_house?
-      return @@hand_strength[3]
+      return @@hand_strength[:fullhouse]
     elsif is_flush?
-      return @@hand_strength[4]
+      return @@hand_strength[:flush]
     elsif is_straight?
-      return @@hand_strength[5]
+      return @@hand_strength[:straight]
     elsif is_three_of_kind?
-      return @@hand_strength[6]
+      return @@hand_strength[:threekind]
     elsif is_two_pair?
-      return @@hand_strength[7]
+      return @@hand_strength[:twopair]
     elsif is_pair?
-      return @@hand_strength[8]
+      return @@hand_strength[:onepair]
     else
-      return high_card
+      return @@hand_strength[:highcard]
     end
 
   end
@@ -225,7 +233,7 @@ class Hand < Deck
   end
 end
 class Player < Hand
-  attr_accessor :hand, :bet, :choice, :winnings
+  attr_accessor :hand, :choice, :winnings, :fold, :name
   @@choices = {1 => "bet", 2 => "fold", 3 => "raise"}
   def initialize(name)
     @name = name
@@ -238,11 +246,12 @@ class Player < Hand
 
   def decision
     #2
+    see
     puts "#{@name} do you want to 1: bet\n2: fold\n3: raise?"
     @choice = gets.chomp.to_i
     if @choice>3
       @choice=3
-    elsif @choice<0
+    else @choice<0
       @choice = 0
     end
     return @@choices[@choice]
@@ -259,7 +268,7 @@ class Player < Hand
     @disc = gets.chomp.to_i
     if @disc>3
       @disc=3
-    elsif @disc<0
+    else @disc<0
       @disc = 0
     end
     return @disc
@@ -270,18 +279,20 @@ class Player < Hand
   end
 
 end
-class Game
-  attr_accessor :bet, :pot, :players, :deck, :prev_bet
+class Game < Player
+  attr_accessor :bet, :pot, :players, :deck, :prev_bet, :players
   def initialize()
     @deck = Deck.new
     @bet = 0
     @pot = 0
     @players = []
     @prev_bet = 0
+    @quit = false
   end
 
   def get_players
-    puts "Enter in each player seperated by only a space"
+    puts "Enter in each player starting with the player that will start first and so on
+          seperated by only a space"
     names = gets.chomp.split(" ")
     names.each do |name|
       @players << Player.new("#{name}")
@@ -295,9 +306,9 @@ class Game
     end
   end
 
-  def exchange()
+  def draw_round
     @players.each do |player|
-      if player.fold = true
+      if player.fold == true
         next
       end
       card_to_discard = []
@@ -328,15 +339,15 @@ class Game
       puts "How much would you like to bet"
       @bets = gets.chomp.to_i
     end
-      bet
+      bets
   end
 
-  def bet
+  def bets
     @pot += @bet
     @bet = @prev_bet
   end
 
-  def raise
+  def raises
     until @bet > @prev_bet+5
       puts "How much would you like to raise
             (must be 5 more than previous bet)"
@@ -345,7 +356,91 @@ class Game
       bet
   end
 
+  def quit_game
+    puts "Do you all want to quit this game?(enter q to quit)"
+    @quit = gets.chomp.downcase
+    if @quit == "q"
+      @quit = true
+    end
+  end
+
+  def show_winnings
+    @players.each do |player|
+      puts player.winnings
+    end
+  end
+
+  def bet_round
+    @players.each do |player|
+      if player.fold == true
+        next
+      end
+      case player.decision
+      when @@choices[1]
+        if @bet == 0
+          first_bet
+        else
+          bet
+        end
+      when @@choices[2]
+        player.fold = true
+      when @@choices[3]
+        raises
+      end
+    end
+  end
+
+  #finds the winner of the round based on their hand ranking
+  def winner_of_round
+    winner = 0
+    winner_lst = []
+    @players.each do |player|
+      if player.fold
+        next
+      end
+      puts "#{player.name} your hand has a rank of #{player.strength}"
+      if player.strength > winner
+        winner_lst = []
+        winner = player.strength
+        winner_lst << player
+      elsif player.strength == winner
+        winner_lst << player
+      end
+    end
+
+    #Breaks a tie if multiple people have the same rank. Breaks tie by highcard value
+    if winner_lst.length>1
+      highest_highcard = 0
+      cur_winner = nil
+      winner_lst.each do |win_player|
+        if highest_highcard < win_player.high_card
+          highest_highcard = win_player.high_card
+          cur_winner = win_player
+        end
+      end
+      cur_winner.winnings += @pot
+      puts "#{cur_winner.name} you won the pot of#{@pot}"
+    end
+    puts "#{winner_lst[0].name} you won the pot of#{@pot}"
+    winner_lst[0].winnings += @pot
+
+    #resets the pot when someone wins
+    @pot = 0
+  end
+
+  #main method that starts the game
   def play
+    get_players
+    new_hand
+    unless @quit
+      bet_round
+      draw_round
+      bet_round
+      winner_of_round
+      quit_game
+    end
+
+    show_winnings
 
   end
 end
@@ -355,8 +450,26 @@ person = Player.new("name")
 person.hand = Hand.new(Card.new("Hearts", 1), Card.new("Hearts", 10), Card.new("Hearts", 11),
   Card.new("Hearts", 12) ,Card.new("Hearts", 13))
 deck = Deck.new
+lst = [person, person, person]
+
+per1 = person
+
+c = 0
+lst.each do |i|
+  if c==0
+    i.hand.card1 = Card.new("Hearts", 3)
+    c += 1
+  end
+end
+
+per2 = person
+puts person.hand_rank
+#per.hand.card1 = Card.new("Hearts", 3)
 
 puts person.hand_rank
-person.hand.card1 = Card.new("Hearts", 3)
+puts per1.hand_rank
+puts per2.hand_rank
+puts lst[2].hand_rank
 
-puts person.hand_rank
+game = Game.new
+#game.play
