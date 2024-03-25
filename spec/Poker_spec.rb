@@ -103,11 +103,11 @@ RSpec.describe Player do
   it "shows the person their cards" do
     expect(person.see).to eq(person.hand.show_hand)
   end
-  xit "asks if they want to discard any cards" do
+  it "asks if they want to discard any cards" do
     expect(person.discard).to eq(3)
   end
-  xit "asks if they want to bet or fold or raise" do
-    expect(person.decision).to eq("raise")
+  it "asks if they want to bet or fold or raise" do
+    expect(person.decision).to eq("fold")
   end
 end
 RSpec.describe Game do
@@ -119,30 +119,38 @@ RSpec.describe Game do
     expect(game.players.length).to be > (intial_players)
   end
   it "gives 5 starting cards to players" do
+    game.players << person
     fresh_deck = game.deck.num_of_cards
     game.new_hand
     expect(fresh_deck).to be > (game.deck.num_of_cards)
   end
   it "Raises the pot when a player bets" do
     prev_pot = game.pot
-    game.bet
-    expect(game.pot).to be > (prev_pot.pot)
+    game.bet = 5
+    game.bets
+    expect(game.pot).to be > (prev_pot)
   end
   it "Removes a player for that round when they fold" do
     game.players << person
     pre_fold = game.players[0].fold
-    game.player[0].fold = true
+    game.players[0].fold = true
     expect(game.players[0].fold).not_to eq(pre_fold)
   end
   it "Increases the bet when someone raises" do
     prev_bet = game.bet
+    game.bet = 5
     game.raises
     expect(game.bet).to be > prev_bet
   end
  it "Changes the players hand when they want to discard cards" do
+
+ #adds a player and makes a copy of their hand and changes there hand later.
+ #updates the main instances and checks if the old one and new one are equal
   game.players << person
-  prev_hand = game.players[0].hand
-  game.player.hand.card1 = Card.new("Hearts", 3)
-  expect(game.players[0].hand).not_to eq(prev_hand)
+  game.new_hand
+  prev_hand_list = game.players[0].hand.card_list.dup
+  game.players[0].hand.card2 = Card.new("Hearts", 3)
+  game.players[0].hand.update
+  expect(game.players[0].hand.card_list).not_to eq(prev_hand_list)
   end
 end

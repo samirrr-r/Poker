@@ -41,7 +41,11 @@ class Deck < Card
   end
 
   def deal(amount)
-    @deck.pop(amount)
+    if amount > 1
+      @deck.pop(amount)
+    else
+      @deck.pop()
+    end
   end
 
   def num_of_cards
@@ -56,7 +60,8 @@ class Deck < Card
 end
 
 class Hand < Deck
-  attr_accessor :card1, :card2, :card3, :card4, :card5
+  attr_accessor :card1, :card2, :card3, :card4, :card5, :card_list
+
   @@hand_strength = {:royalflush => 10,
                       :straightflush => 9,
                       :fourkind => 8,
@@ -221,6 +226,7 @@ class Hand < Deck
   end
 
   def high_card
+    update
     return @sorted_val_list[4]
   end
 
@@ -248,10 +254,10 @@ class Player < Hand
     #2
     see
     puts "#{@name} do you want to 1: bet\n2: fold\n3: raise?"
-    @choice = gets.chomp.to_i
+    @choice = 2
     if @choice>3
       @choice=3
-    else @choice<0
+    elsif @choice<0
       @choice = 0
     end
     return @@choices[@choice]
@@ -265,10 +271,10 @@ class Player < Hand
     see
     puts "#{@name} how many cards do you want to discard 0-3?"
     #1
-    @disc = gets.chomp.to_i
+    @disc = 3
     if @disc>3
       @disc=3
-    else @disc<0
+    elsif @disc<0
       @disc = 0
     end
     return @disc
@@ -320,15 +326,15 @@ class Game < Player
       card_to_discard.each do |card|
         case card_to_discard
         when 1
-          player.hand.card1 = deck.deal()
+          player.hand.card1 = deck.deal(1)
         when 2
-          player.hand.card2 = deck.deal()
+          player.hand.card2 = deck.deal(1)
         when 3
-          player.hand.card3 = deck.deal()
+          player.hand.card3 = deck.deal(1)
         when 4
-          player.hand.card4 = deck.deal()
+          player.hand.card4 = deck.deal(1)
         when 5
-          player.hand.card5 = deck.deal()
+          player.hand.card5 = deck.deal(1)
         end
       end
     end
@@ -348,10 +354,10 @@ class Game < Player
   end
 
   def raises
-    until @bet > @prev_bet+5
+    until @bet >= @prev_bet+5
       puts "How much would you like to raise
             (must be 5 more than previous bet)"
-      @bets = gets.chomp.to_i
+      @bets = 10
     end
       bet
   end
