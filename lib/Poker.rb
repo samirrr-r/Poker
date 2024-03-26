@@ -327,17 +327,13 @@ class Game < Player
     end
   end
 
-  #the first bet of the game
-  def first_bet
+
+  #adds to the pot when the user picks bets
+  def bets
     while @bet == 0 || @bet < 0
       puts "#{players[0].name} how much would you like to bet"
       @bet = gets.chomp.to_i
     end
-      bets
-  end
-
-  #adds to the pot when the user picks bets
-  def bets
     @pot += @bet
     @prev_bet = @bet
   end
@@ -376,11 +372,7 @@ class Game < Player
       end
       case player.decision
       when @@choices[1]
-        if @bet <= 0
-          first_bet
-        else
           bets
-        end
       when @@choices[2]
         player.fold = true
       when @@choices[3]
@@ -445,3 +437,6 @@ class Game < Player
 
   end
 end
+
+game = Game.new
+game.play
