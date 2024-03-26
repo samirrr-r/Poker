@@ -81,6 +81,7 @@ class Hand < Deck
     update
   end
 
+#updates the list when variables are changed
   def update
     @card_list = [@card1, @card2, @card3, @card4, @card5]
     @val_list = [@card1.value, @card2.value, @card3.value, @card4.value, @card5.value]
@@ -265,7 +266,6 @@ class Player < Hand
   end
 
   def see
-
     hand.show_hand
   end
 
@@ -307,6 +307,7 @@ class Game < Player
     end
   end
 
+#gives a player a new hand from deck
   def new_hand
     @players.each do |player|
       c1, c2, c3, c4, c5 = deck.deal(5)
@@ -315,6 +316,7 @@ class Game < Player
     end
   end
 
+  #round that allows the player to swap out their cards from
   def draw_round
     @players.each do |player|
       if player.fold == true
@@ -344,6 +346,7 @@ class Game < Player
     end
   end
 
+  #the first bet of the game
   def first_bet
     while @bet == 0 || @bet < 0
       puts "#{players[0].name} how much would you like to bet"
@@ -352,6 +355,7 @@ class Game < Player
       bets
   end
 
+  #adds to the pot when the user picks bets
   def bets
     @pot += @bet
     @prev_bet = @bet
@@ -376,12 +380,14 @@ class Game < Player
     end
   end
 
+  #shows each player's winnings at the end of the game
   def show_winnings
     @players.each do |player|
       puts "#{player.name} you won $#{player.winnings}"
     end
   end
 
+  #This is the bet round that lets the player bet fold or raise based on their input
   def bet_round
     @players.each do |player|
       if player.fold == true
@@ -410,12 +416,12 @@ class Game < Player
       if player.fold
         next
       end
-      puts "#{player.name} your hand has a rank of #{player.hand.strength}"
-      if player.hand.strength > winner
+      puts "#{player.name} your hand has a rank of #{player.hand_rank}"
+      if player.hand_rank > winner
         winner_lst = []
-        winner = player.hand.strength
+        winner = player.hand_rank
         winner_lst << player
-      elsif player.hand.strength == winner
+      elsif player.hand_rank == winner
         winner_lst << player
       end
     end

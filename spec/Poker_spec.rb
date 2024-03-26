@@ -144,8 +144,7 @@ RSpec.describe Game do
   end
  it "Changes the players hand when they want to discard cards" do
 
- #adds a player and makes a copy of their hand and changes there hand later.
- #updates the main instances and checks if the old one and new one are equal
+
   game.players << person
   game.new_hand
   prev_hand_list = game.players[0].hand.card_list.dup
