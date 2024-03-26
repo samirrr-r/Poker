@@ -149,21 +149,7 @@ class Hand < Deck
   end
 
   def is_four_kind?#22
-    @len.times do |i|
-    occur = 1
-    check = @val_list[i]
-      j = i+1
-      (@len-i-1).times do
-        if @val_list[i] == @val_list[j]
-          occur +=1
-          if occur == 4
-            return true
-          end
-        end
-        j +=1
-      end
-    end
-    return false
+    of_a_kind(4)
   end
 
   def is_full_house?
@@ -180,20 +166,7 @@ class Hand < Deck
   end
 
   def is_three_of_kind?#2
-    occur = 0
-    @len.times do |i|
-      j = i+1
-      (@len-i-1).times do
-        if @val_list[i] == @val_list[j]
-          occur +=1
-          if occur == 3
-            return true
-          end
-        end
-        j +=1
-      end
-    end
-    return false
+    of_a_kind(3)
   end
 
   def is_two_pair?#2
@@ -214,21 +187,29 @@ class Hand < Deck
   end
 
   def is_pair?#2
-    @len.times do |i|
-      j = i+1
-      (@len-1).times do
-        if @val_list[i] == @val_list[j]
-          return true
-        end
-        j +=1
-      end
-    end
-    return false
+    of_a_kind(2)
   end
 
   def high_card
     update
     return @sorted_val_list[4]
+  end
+
+  def of_a_kind(n)
+    @len.times do |i|
+    occur = 1
+      j = i+1
+      (@len-i-1).times do
+        if @val_list[i] == @val_list[j]
+          occur +=1
+          if occur == n
+            return true
+          end
+        end
+        j +=1
+      end
+    end
+      return false
   end
 
   def show_hand
@@ -256,12 +237,7 @@ class Player < Hand
     #2
     see
     puts "#{@name} do you want to 1: bet\n2: fold\n3: raise?"
-    @choice = gets.chomp.to_i
-    if @choice>3
-      @choice=3
-    elsif @choice<0
-      @choice = 0
-    end
+    @choice = ask
     return @@choices[@choice]
   end
 
@@ -273,13 +249,18 @@ class Player < Hand
     see
     puts "#{@name} how many cards do you want to discard 0-3?"
     #1
-    @disc = gets.chomp.to_i
-    if @disc>3
-      @disc=3
-    elsif @disc<0
-      @disc = 0
+    @disc = ask
+
+  end
+
+  def ask
+    resp = gets.chomp.to_i
+    if resp>3
+      resp=3
+    elsif resp<0
+      resp = 0
     end
-    return @disc
+    return resp
   end
 
   def hand_rank
@@ -437,9 +418,9 @@ class Game < Player
         end
       end
       cur_winner.winnings += @pot
-      puts "#{cur_winner.name} you won the pot of#{@pot}"
+      puts "#{cur_winner.name} you won the pot of $#{@pot}"
     elsif winner_lst.length == 1
-      puts "#{winner_lst[0].name} you won the pot of #{@pot}"
+      puts "#{winner_lst[0].name} you won the pot of $#{@pot}"
       winner_lst[0].winnings += @pot
     else
       puts "Nobody won"
@@ -464,32 +445,3 @@ class Game < Player
 
   end
 end
-
-
-person = Player.new("name")
-person.hand = Hand.new(Card.new("Hearts", 1), Card.new("Hearts", 10), Card.new("Hearts", 11),
-  Card.new("Hearts", 12) ,Card.new("Hearts", 13))
-deck = Deck.new
-lst = [person, person, person]
-
-per1 = person
-
-c = 0
-lst.each do |i|
-  if c==0
-    i.hand.card1 = Card.new("Hearts", 3)
-    c += 1
-  end
-end
-
-per2 = person
-puts person.hand_rank
-#per.hand.card1 = Card.new("Hearts", 3)
-
-puts person.hand_rank
-puts per1.hand_rank
-puts per2.hand_rank
-puts lst[2].hand_rank
-
-game = Game.new
-game.play

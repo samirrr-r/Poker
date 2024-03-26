@@ -143,8 +143,6 @@ RSpec.describe Game do
     expect(game.bet).to be > prev_bet
   end
  it "Changes the players hand when they want to discard cards" do
-
-
   game.players << person
   game.new_hand
   prev_hand_list = game.players[0].hand.card_list.dup
